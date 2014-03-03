@@ -8,7 +8,7 @@
 
 if [[ ! -e /usr/bin/feh ]]; then echo "this script requires feh" >&2; exit 1; fi
 if [[ ! -e /usr/bin/curl ]]; then echo "this script requires curl" >&2; exit 1; fi
-[[ -d ~/xkfetch ]] || mkdir ~/xkcdfetch
+[[ -d ~/xkfetch ]] || mkdir ~/xkfetch
 
 doc() {
   echo
