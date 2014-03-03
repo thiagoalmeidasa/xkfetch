@@ -1,0 +1,103 @@
+#!/bin/bash
+
+## xkfetch
+## by tb01110100
+## a general-purpose xkcd script
+## depends on feh and curl
+## this stuff below does stuff, or something
+
+if [[ ! -e /usr/bin/feh ]]; then echo "this script requires feh" >&2; exit 1; fi
+if [[ ! -e /usr/bin/curl ]]; then echo "this script requires curl" >&2; exit 1; fi
+[[ -d ~/xkcd ]] || mkdir ~/xkcd
+
+doc() {
+  echo
+  echo "xkfetch 0.5"
+  echo "written by tb01110100"
+  echo
+  echo "usage: xkfetch [options...]"
+  echo
+  echo "  -t		fetch and display today's xkcd and titletext"
+  echo "  -n <number>	fetch a specific xkcd and display titletext"
+  echo "  -r		fetch a random xkcd"
+  echo "  -d		disable titletext printing"
+  echo "  -s		save a fetched xkcd. xkcds are saved to ~/xkcd"
+  echo "  -h		display this message"
+  echo
+}
+
+setvars(){
+  data=$(curl -s http://xkcd.com/$xkcdnum/ | grep "imgs.xkcd.com/comics" | head -n 1)
+  linkpart=$(echo $data | awk '{ print $2 }')
+  xkcdurl=${linkpart:5:-1}
+  xkcdtitle=${xkcdurl:28:-4}
+  titletext=${data:$(( ${#xkcdurl} + 19 )):-$(( ${#xkcdtitle} + 11 ))}
+}
+
+download(){
+  curl -s -o ~/xkcd/"$xkcdnum-$xkcdtitle".png $xkcdurl
+}
+
+fetch() {
+  setvars
+  if [[ -z $(ls ~/xkcd | grep "$xkcdnum-") ]]; then
+    download
+    feh ~/xkcd/"$xkcdnum-$xkcdtitle".png
+    [[ $save != "1" ]] && rm ~/xkcd/"$xkcdnum-$xkcdtitle".png
+    [[ $title != "1" ]] && echo "$titletext" | sed 's/&#39;/'\''/g'
+  else
+    echo "xkcd #$xkcdnum has already been saved"
+    feh ~/xkcd/"$xkcdnum-$xkcdtitle".png
+    [[ $title != "1" ]] && echo "$titletext" | sed 's/&#39;/'\''/g'
+  fi
+}
+
+today() {
+  numpart=$(curl -s http://xkcd.com/ | grep Permanent)
+  xkcdnum=${numpart:46:-7}
+  fetch
+}
+
+random(){
+  numpart=$(curl -s http://xkcd.com/ | grep Permanent)
+  todaynum=${numpart:46:-7}
+  xkcdnum=$(shuf -i 0-$todaynum -n 1)
+  echo "xkcd #$xkcdnum"
+  fetch
+}
+
+while getopts ":tn:rdsh" opt; do
+  case $opt in
+    t)
+      today=1
+      ;;
+    n)
+      xkcdnum=$OPTARG
+      ;;
+    r)
+      random=1
+      ;;
+    d)
+      title=1
+      ;;
+    s)
+      save=1
+      ;;
+    h)
+      help=1
+      ;;
+    \?)
+      echo "invalid option: -$OPTARG" >&2; exit 1
+      ;;
+    :)
+      echo "option -$OPTARG requires an argument" >&2; exit 1
+      ;;
+  esac
+done
+
+if [[ $help = "1" ]]; then doc; exit; fi
+if [[ $today = "1" ]]; then today; exit; fi
+if [[ $random = "1" ]]; then random; exit; fi
+if [[ -n $xkcdnum ]]; then fetch; exit; fi
+
+doc
