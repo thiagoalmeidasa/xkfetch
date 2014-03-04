@@ -7,7 +7,7 @@ a general-purpose xkcd fetching bash script
 dependencies
 ============
 
-xkfetch depends on feh and curl, both of which should be available via your package manager.
+xkfetch depends on feh and curl, both of which should be available via your package manager
 
 installation
 ============
