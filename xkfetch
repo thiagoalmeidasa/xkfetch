@@ -35,19 +35,19 @@ setvars(){
 }
 
 download(){
-  curl -s -o ~/xkcd/"$xkcdnum-$xkcdtitle".png $xkcdurl
+  curl -s -o ~/xkfetch/"$xkcdnum-$xkcdtitle".png $xkcdurl
 }
 
 fetch() {
   setvars
-  if [[ -z $(ls ~/xkcd | grep "$xkcdnum-") ]]; then
+  if [[ -z $(ls ~/xkfetch | grep "$xkcdnum-") ]]; then
     download
-    feh ~/xkcd/"$xkcdnum-$xkcdtitle".png
-    [[ $save != "1" ]] && rm ~/xkcd/"$xkcdnum-$xkcdtitle".png
+    feh ~/xkfetch/"$xkcdnum-$xkcdtitle".png
+    [[ $save != "1" ]] && rm ~/xkfetch/"$xkcdnum-$xkcdtitle".png
     [[ $title != "1" ]] && echo "$titletext" | sed 's/&#39;/'\''/g'
   else
     echo "xkcd #$xkcdnum has already been saved"
-    feh ~/xkcd/"$xkcdnum-$xkcdtitle".png
+    feh ~/xkfetch/"$xkcdnum-$xkcdtitle".png
     [[ $title != "1" ]] && echo "$titletext" | sed 's/&#39;/'\''/g'
   fi
 }
