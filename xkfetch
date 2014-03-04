@@ -34,21 +34,17 @@ setvars(){
   titletext=${data:$(( ${#xkcdurl} + 19 )):-$(( ${#xkcdtitle} + 11 ))}
 }
 
-download(){
-  curl -s -o ~/xkfetch/"$xkcdnum-$xkcdtitle".png $xkcdurl
-}
-
 fetch() {
   setvars
   if [[ -z $(ls ~/xkfetch | grep "$xkcdnum-") ]]; then
-    download
+    curl -s -o ~/xkfetch/"$xkcdnum-$xkcdtitle".png $xkcdurl
+    [[ $title != "1" ]] && echo "$titletext" | sed 's/&#39;/'\''/g'
     feh ~/xkfetch/"$xkcdnum-$xkcdtitle".png
     [[ $save != "1" ]] && rm ~/xkfetch/"$xkcdnum-$xkcdtitle".png
-    [[ $title != "1" ]] && echo "$titletext" | sed 's/&#39;/'\''/g'
   else
     echo "xkcd #$xkcdnum has already been saved"
-    feh ~/xkfetch/"$xkcdnum-$xkcdtitle".png
     [[ $title != "1" ]] && echo "$titletext" | sed 's/&#39;/'\''/g'
+    feh ~/xkfetch/"$xkcdnum-$xkcdtitle".png
   fi
 }
 
