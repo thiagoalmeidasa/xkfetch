@@ -1,7 +1,6 @@
 #!/bin/bash
 
-## xkfetch
-## by tb01110100
+## xkfetch by tb01110100
 ## a general-purpose xkcd script
 ## depends on feh and curl
 ## this stuff below does stuff, or something
