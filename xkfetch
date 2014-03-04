@@ -19,6 +19,7 @@ doc() {
   echo "  -t		fetch and display today's xkcd and titletext"
   echo "  -n <number>	fetch a specific xkcd and display titletext"
   echo "  -r		fetch a random xkcd"
+  echo "  -m <number>	fetch a random xkcd every <number> minutes."
   echo "  -d		disable titletext printing"
   echo "  -s		save a fetched xkcd. xkcds are saved to ~/xkfetch"
   echo "  -h		display this message"
@@ -38,12 +39,13 @@ fetch() {
   if [[ -z $(ls ~/xkfetch | grep "$xkcdnum-") ]]; then
     curl -s -o ~/xkfetch/"$xkcdnum-$xkcdtitle".png $xkcdurl
     [[ $title != "1" ]] && echo "$titletext" | sed 's/&#39;/'\''/g'
-    feh ~/xkfetch/"$xkcdnum-$xkcdtitle".png
+    feh ~/xkfetch/"$xkcdnum-$xkcdtitle".png &
+    sleep 2
     [[ $save != "1" ]] && rm ~/xkfetch/"$xkcdnum-$xkcdtitle".png
   else
     echo "xkcd #$xkcdnum has already been saved"
     [[ $title != "1" ]] && echo "$titletext" | sed 's/&#39;/'\''/g'
-    feh ~/xkfetch/"$xkcdnum-$xkcdtitle".png
+    feh ~/xkfetch/"$xkcdnum-$xkcdtitle".png &
   fi
 }
 
@@ -53,7 +55,7 @@ today() {
   fetch
 }
 
-random(){
+random() {
   numpart=$(curl -s http://xkcd.com/ | grep Permanent)
   todaynum=${numpart:46:-7}
   xkcdnum=$(shuf -i 0-$todaynum -n 1)
@@ -61,7 +63,16 @@ random(){
   fetch
 }
 
-while getopts ":tn:rdsh" opt; do
+randomtimed() {
+  while :
+  do
+    random
+    sleep $(( $minutes * 60 ))
+    kill $!
+  done
+}
+
+while getopts ":tn:rm:dsh" opt; do
   case $opt in
     t)
       today=1
@@ -71,6 +82,9 @@ while getopts ":tn:rdsh" opt; do
       ;;
     r)
       random=1
+      ;;
+    m)
+      minutes=$OPTARG
       ;;
     d)
       title=1
@@ -93,6 +107,7 @@ done
 if [[ $help = "1" ]]; then doc; exit; fi
 if [[ $today = "1" ]]; then today; exit; fi
 if [[ $random = "1" ]]; then random; exit; fi
+if [[ -n $minutes ]]; then randomtimed; exit; fi
 if [[ -n $xkcdnum ]]; then fetch; exit; fi
 
 doc
