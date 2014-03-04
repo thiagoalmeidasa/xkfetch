@@ -20,7 +20,7 @@ doc() {
   echo "  -n <number>	fetch a specific xkcd and display titletext"
   echo "  -r		fetch a random xkcd"
   echo "  -d		disable titletext printing"
-  echo "  -s		save a fetched xkcd. xkcds are saved to ~/xkcd"
+  echo "  -s		save a fetched xkcd. xkcds are saved to ~/xkfetch"
   echo "  -h		display this message"
   echo
 }
