@@ -11,7 +11,7 @@ if [[ ! -e /usr/bin/curl ]]; then echo "this script requires curl" >&2; exit 1; 
 
 doc() {
   echo
-  echo "xkfetch 0.6"
+  echo "xkfetch 0.6.1"
   echo "written by tb01110100"
   echo
   echo "usage: xkfetch [options...]"
@@ -30,22 +30,26 @@ setvars(){
   data=$(curl -s http://xkcd.com/$xkcdnum/ | grep "imgs.xkcd.com/comics" | head -n 1)
   linkpart=$(echo $data | awk '{ print $2 }')
   xkcdurl=${linkpart:5:-1}
-  xkcdtitle=${xkcdurl:28:-4}
-  titletext=${data:$(( ${#xkcdurl} + 19 )):-$(( ${#xkcdtitle} + 11 ))}
+  xkcdtitle1=${xkcdurl:28:-4}
+  titlepart=$(curl -s http://xkcd.com/$xkcdnum/ | grep "id=\"ctitle\"")
+  xkcdtitle2=${titlepart:17:-6}
+  titletext=$(echo ${data:$(( ${#xkcdurl} + 19 )):-$(( ${#xkcdtitle1} + 11 ))} | sed 's/&#39;/'\''/g')
 }
 
 fetch() {
   setvars
   if [[ -z $(ls ~/xkfetch | grep "$xkcdnum-") ]]; then
-    curl -s -o ~/xkfetch/"$xkcdnum-$xkcdtitle".png $xkcdurl
-    [[ $title != "1" ]] && echo "$titletext" | sed 's/&#39;/'\''/g'
-    feh ~/xkfetch/"$xkcdnum-$xkcdtitle".png &
+    curl -s -o ~/xkfetch/"$xkcdnum-$xkcdtitle1".png $xkcdurl
+    echo "xkcd #$xkcdnum - $xkcdtitle2"
+    [[ $title != "1" ]] && echo "$titletext"
+    feh ~/xkfetch/"$xkcdnum-$xkcdtitle1".png &
     sleep 2
-    [[ $save != "1" ]] && rm ~/xkfetch/"$xkcdnum-$xkcdtitle".png
+    [[ $save != "1" ]] && rm ~/xkfetch/"$xkcdnum-$xkcdtitle1".png
   else
-    echo "xkcd #$xkcdnum has already been saved"
-    [[ $title != "1" ]] && echo "$titletext" | sed 's/&#39;/'\''/g'
-    feh ~/xkfetch/"$xkcdnum-$xkcdtitle".png &
+    echo "this xkcd has already been saved"
+    echo "xkcd #$xkcdnum - $xkcdtitle2"
+    [[ $title != "1" ]] && echo "$titletext"
+    feh ~/xkfetch/"$xkcdnum-$xkcdtitle1".png &
   fi
 }
 
@@ -59,7 +63,6 @@ random() {
   numpart=$(curl -s http://xkcd.com/ | grep Permanent)
   todaynum=${numpart:46:-7}
   xkcdnum=$(shuf -i 0-$todaynum -n 1)
-  echo "xkcd #$xkcdnum"
   fetch
 }
 
