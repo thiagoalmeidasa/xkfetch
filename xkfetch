@@ -72,6 +72,7 @@ randomtimed() {
     random
     sleep $(( $minutes * 60 ))
     kill $!
+    echo
   done
 }
 
