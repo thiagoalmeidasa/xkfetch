@@ -5,13 +5,14 @@
 ## depends on feh and curl
 ## this stuff below does stuff, or something
 
-if [[ ! -e /usr/bin/feh ]]; then echo "this script requires feh" >&2; exit 1; fi
-if [[ ! -e /usr/bin/curl ]]; then echo "this script requires curl" >&2; exit 1; fi
+type feh >/dev/null 2>&1 || { echo >&2 "this script requires feh"; exit 1; }
+type curl >/dev/null 2>&1 || { echo >&2 "this script requires curl"; exit 1; }
+type bc >/dev/null 2>&1 || { echo >&2 "this script requires bc"; exit 1; }
 [[ -d ~/xkfetch ]] || mkdir ~/xkfetch
 
 doc() {
   echo
-  echo "xkfetch 0.6.1"
+  echo "xkfetch 0.7"
   echo "written by tb01110100"
   echo
   echo "usage: xkfetch [options...]"
@@ -36,13 +37,23 @@ setvars(){
   titletext=$(echo ${data:$(( ${#xkcdurl} + 19 )):-$(( ${#xkcdtitle1} + 11 ))} | sed 's/&#39;/'\''/g')
 }
 
+specialcheck() {
+  if [[ "$?" != "0" ]]; then
+    echo "This appears to be a special/interactive comic."
+    echo "Here's a link to open it in your browser:"
+    echo "https://xkcd.com/$xkcdnum"
+    exit
+  fi
+}
+
 fetch() {
   setvars
   if [[ -z $(ls ~/xkfetch | grep "$xkcdnum-") ]]; then
-    curl -s -o ~/xkfetch/"$xkcdnum-$xkcdtitle1".png $xkcdurl
+    curl -s -o ~/xkfetch/"$xkcdnum-$xkcdtitle1".png $xkcdurl > /dev/null 2>&1
+    specialcheck
     echo "xkcd #$xkcdnum - $xkcdtitle2"
     [[ $title != "1" ]] && echo "$titletext"
-    feh ~/xkfetch/"$xkcdnum-$xkcdtitle1".png &
+    feh ~/xkfetch/"$xkcdnum-$xkcdtitle1".png > /dev/null 2>&1 &
     sleep 2
     [[ $save != "1" ]] && rm ~/xkfetch/"$xkcdnum-$xkcdtitle1".png
   else
@@ -70,7 +81,7 @@ randomtimed() {
   while :
   do
     random
-    sleep $(( $minutes * 60 ))
+    sleep $(bc -l <<< "$minutes * 60")
     kill $!
     echo
   done
@@ -79,32 +90,23 @@ randomtimed() {
 while getopts ":tn:rm:dsh" opt; do
   case $opt in
     t)
-      today=1
-      ;;
+      today=1;;
     n)
-      xkcdnum=$OPTARG
-      ;;
+      xkcdnum=$OPTARG;;
     r)
-      random=1
-      ;;
+      random=1;;
     m)
-      minutes=$OPTARG
-      ;;
+      minutes=$OPTARG;;
     d)
-      title=1
-      ;;
+      title=1;;
     s)
-      save=1
-      ;;
+      save=1;;
     h)
-      help=1
-      ;;
+      help=1;;
     \?)
-      echo "invalid option: -$OPTARG" >&2; exit 1
-      ;;
+      echo "invalid option: -$OPTARG" >&2; exit 1;;
     :)
-      echo "option -$OPTARG requires an argument" >&2; exit 1
-      ;;
+      echo "option -$OPTARG requires an argument" >&2; exit 1;;
   esac
 done
 
