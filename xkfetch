@@ -1,9 +1,14 @@
 #!/bin/bash
 
-## xkfetch by tb01110100
-## a general-purpose xkcd script
-## depends on feh and curl
-## this stuff below does stuff, or something
+#        _     __      _       _     
+#  __  _| | __/ _| ___| |_ ___| |__  
+#  \ \/ / |/ / |_ / _ \ __/ __| '_ \ 
+#   >  <|   <|  _|  __/ || (__| | | |
+#  /_/\_\_|\_\_|  \___|\__\___|_| |_|
+#
+#  written by thomas berryhill <tb01110100@gmail.com>
+#  under the mit license
+
 
 type feh >/dev/null 2>&1 || { echo >&2 "this script requires feh"; exit 1; }
 type curl >/dev/null 2>&1 || { echo >&2 "this script requires curl"; exit 1; }
@@ -12,7 +17,7 @@ type bc >/dev/null 2>&1 || { echo >&2 "this script requires bc"; exit 1; }
 
 doc() {
   echo
-  echo "xkfetch 0.7"
+  echo "xkfetch 0.7.1"
   echo "written by tb01110100"
   echo
   echo "usage: xkfetch [options...]"
