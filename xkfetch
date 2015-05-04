@@ -7,6 +7,7 @@
 #  /_/\_\_|\_\_|  \___|\__\___|_| |_|
 #
 #  written by thomas berryhill <tb01110100@gmail.com>
+#  modified by thiago almeida <thiagoalmeidasa@gmail.com>
 #  under the mit license
 
 
@@ -17,8 +18,8 @@ type bc >/dev/null 2>&1 || { echo >&2 "this script requires bc"; exit 1; }
 
 doc() {
   echo
-  echo "xkfetch 0.7.1"
-  echo "written by tb01110100"
+  echo "xkfetch 0.7.2"
+  echo "modified by thiagoalmeidasa"
   echo
   echo "usage: xkfetch [options...]"
   echo
@@ -35,7 +36,8 @@ doc() {
 setvars(){
   data=$(curl -s http://xkcd.com/$xkcdnum/ | grep "imgs.xkcd.com/comics" | head -n 1)
   linkpart=$(echo $data | awk '{ print $2 }')
-  xkcdurl=${linkpart:5:-1}
+  xkcdurl="http:${linkpart:5:-1}"
+  echo $xkcdurl
   xkcdtitle1=${xkcdurl:28:-4}
   titlepart=$(curl -s http://xkcd.com/$xkcdnum/ | grep "id=\"ctitle\"")
   xkcdtitle2=${titlepart:17:-6}
