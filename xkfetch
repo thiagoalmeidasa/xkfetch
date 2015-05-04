@@ -56,11 +56,11 @@ specialcheck() {
 fetch() {
   setvars
   if [[ -z $(ls ~/xkfetch | grep "$xkcdnum-") ]]; then
-    curl -s -o ~/xkfetch/"$xkcdnum-$xkcdtitle1".png $xkcdurl > /dev/null 2>&1
+    curl -s -o ~/xkfetch/"$xkcdnum-$xkcdtitle2".png $xkcdurl > /dev/null 2>&1
     specialcheck
     echo "xkcd #$xkcdnum - $xkcdtitle2"
     [[ $title != "1" ]] && echo "$titletext"
-    feh ~/xkfetch/"$xkcdnum-$xkcdtitle1".png > /dev/null 2>&1 &
+    feh ~/xkfetch/"$xkcdnum-$xkcdtitle2".png > /dev/null 2>&1 &
     sleep 2
     [[ $save != "1" ]] && rm ~/xkfetch/"$xkcdnum-$xkcdtitle1".png
   else
