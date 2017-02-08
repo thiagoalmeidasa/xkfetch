@@ -34,12 +34,12 @@ doc() {
 }
 
 setvars(){
-  data=$(curl -s http://xkcd.com/$xkcdnum/ | grep "imgs.xkcd.com/comics" | head -n 1)
+  data=$(curl -s https://xkcd.com/$xkcdnum/ | grep "imgs.xkcd.com/comics" | head -n 1)
   linkpart=$(echo $data | awk '{ print $2 }')
-  xkcdurl="http:${linkpart:5:-1}"
+  xkcdurl="https:${linkpart:5:-1}"
   echo $xkcdurl
   xkcdtitle1=${xkcdurl:28:-4}
-  titlepart=$(curl -s http://xkcd.com/$xkcdnum/ | grep "id=\"ctitle\"")
+  titlepart=$(curl -s https://xkcd.com/$xkcdnum/ | grep "id=\"ctitle\"")
   xkcdtitle2=${titlepart:17:-6}
   titletext=$(echo ${data:$(( ${#xkcdurl} + 19 )):-$(( ${#xkcdtitle1} + 11 ))} | sed 's/&#39;/'\''/g')
 }
@@ -62,7 +62,7 @@ fetch() {
     [[ $title != "1" ]] && echo "$titletext"
     feh ~/xkfetch/"$xkcdnum-$xkcdtitle2".png > /dev/null 2>&1 &
     sleep 2
-    [[ $save != "1" ]] && rm ~/xkfetch/"$xkcdnum-$xkcdtitle1".png
+    [[ $save != "1" ]] && rm ~/xkfetch/"$xkcdnum-$xkcdtitle2".png
   else
     echo "this xkcd has already been saved"
     echo "xkcd #$xkcdnum - $xkcdtitle2"
@@ -72,13 +72,13 @@ fetch() {
 }
 
 today() {
-  numpart=$(curl -s http://xkcd.com/ | grep Permanent)
+  numpart=$(curl -s https://xkcd.com/ | grep Permanent)
   xkcdnum=${numpart:46:-7}
   fetch
 }
 
 random() {
-  numpart=$(curl -s http://xkcd.com/ | grep Permanent)
+  numpart=$(curl -s https://xkcd.com/ | grep Permanent)
   todaynum=${numpart:46:-7}
   xkcdnum=$(shuf -i 0-$todaynum -n 1)
   fetch
